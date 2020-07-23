@@ -17,4 +17,8 @@ Easily set Anime folder icons on Windows.
 - Now click on *Set Icons* and the process will start.
 - After the task is finished, folder icons will be set (if a folder icon remains unchanged try restarting Windows).
 - Click on *Find Missing Episodes* to check for any missing or extra episodes in a folder.
-- Enjoy!
+- After using:  
+- Folders:  
+![Folders](https://i.ibb.co/hZhthQw/Screenshot-1162.png)  
+- Sub-folders:  
+![Sub](https://i.ibb.co/tp3h99s/Screenshot-1164.png)
