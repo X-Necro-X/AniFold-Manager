@@ -4,7 +4,7 @@ Easily set Anime folder icons on Windows.
 - Download 'exe' file from the [Releases](https://github.com/Necro-Mancer-94540/AniFold-Samurai/releases/tag/initial) section and open it.
 - Anime collection should follow this hierarchy for the software to work properly :  
 ![Hierarchy](https://i.ibb.co/SfJxVzn/Untitled-Diagram.png)  
-- Enter the path to Anime collection in the space provided.
+- Enter the path to Anime collection in the space provided (remember to put a "\" at the end).
 - If using the software for the first time, click on *Reset Folders*.
 - Now click on *Generate !ndex.txt*.
 - *Output* section will look like this:  
