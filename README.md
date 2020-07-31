@@ -5,6 +5,7 @@ Easily set Anime folder icons on Windows.
 - Anime collection should follow this hierarchy for the software to work properly :  
 ![Hierarchy](https://i.ibb.co/SfJxVzn/Untitled-Diagram.png)  
 - Enter the path to Anime collection in the space provided (remember to put a '\\' at the end).
+- If you want the s/w to ignore a folder, rename it and add ! at the start. Ex- !ignore
 - If using the software for the first time, click on *Reset Folders*.
 - Now click on *Generate !ndex.txt*.
 - *Output* section will look like this:  
