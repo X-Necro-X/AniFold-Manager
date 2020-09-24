@@ -147,6 +147,7 @@ def setIcon(ANIME_PATH):
                     Media (id: $id, type: ANIME) {
                         id
                         title {
+                            english
                             romaji
                         }
                         coverImage{
@@ -159,7 +160,8 @@ def setIcon(ANIME_PATH):
                 log.see(END)
                 root.update()
                 response = requests.post('https://graphql.anilist.co', json={'query': query, 'variables': variables}).json()['data']['Media']
-                title = response['title']['romaji'].replace('/', '~').replace(':', '~').replace('*', '~').replace('?', '~').replace('"', '~').replace('<', '~').replace('>', '~').replace('|', '~')
+                title_base = response['title']['english'] if response['title']['english'] else response['title']['romaji']
+                title_base = title_base.replace('&', 'and').replace('/', '~').replace(':', '~').replace('*', '~').replace('?', '~').replace('"', '~').replace('<', '~').replace('>', '~').replace('|', '~')
                 cover = response['coverImage']['extraLarge']
                 image = ANIME_PATH + anime + '/!con' + os.path.splitext(cover)[1]
                 log.insert(END, '  -Downloading icon' + '\n')
@@ -212,6 +214,7 @@ def setIcon(ANIME_PATH):
                         Media (id: $id, type: ANIME) {
                             id
                             title {
+                                english
                                 romaji
                             }
                             coverImage{
@@ -224,7 +227,8 @@ def setIcon(ANIME_PATH):
                     log.see(END)
                     root.update()
                     response = requests.post('https://graphql.anilist.co', json={'query': query, 'variables': variables}).json()['data']['Media']
-                    title = response['title']['romaji'].replace('/', '~').replace(':', '~').replace('*', '~').replace('?', '~').replace('"', '~').replace('<', '~').replace('>', '~').replace('|', '~')
+                    title = response['title']['english'] if response['title']['english'] else response['title']['romaji']
+                    title = title.replace('&', 'and').replace('/', '~').replace(':', '~').replace('*', '~').replace('?', '~').replace('"', '~').replace('<', '~').replace('>', '~').replace('|', '~')
                     cover = response['coverImage']['extraLarge']
                     image = ANIME_PATH + anime + '/' + part + '/!con' + os.path.splitext(cover)[1]
                     log.insert(END, '  -Downloading icon' + '\n')
@@ -252,6 +256,10 @@ def setIcon(ANIME_PATH):
                     log.see(END)
                     root.update()
                     time.sleep(1)
+            log.insert(END, '  -Renaming folder' + '\n')
+            log.see(END)
+            root.update()
+            os.rename(ANIME_PATH + anime, ANIME_PATH + title_base)
         except:
             continue
     log.insert(END, 'TASK ENDED\n')
