@@ -310,7 +310,7 @@ def missing(ANIME_PATH):
                 log.see(END)
                 root.update()
                 response = requests.post('https://graphql.anilist.co', json={'query': query, 'variables': variables}).json()['data']['Media']
-                episodes = int(response['episodes'])
+                episodes = 0 if not(response['episodes']) else int(response['episodes'])
                 if content < episodes:
                     log.insert(END, '  -' + str(episodes - content) + ' episodes MISSING in ' + part + '\n')
                     log.see(END)
