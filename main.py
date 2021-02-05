@@ -1,3 +1,6 @@
+# Necro(ネクロ)
+# sidmishra94540@gmail.com
+
 import os, requests, sys, time, PIL.Image
 from tkinter import *
 import webbrowser
