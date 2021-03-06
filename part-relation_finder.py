@@ -1,3 +1,6 @@
+# Necro(ネクロ)
+# sidmishra94540@gmail.com
+ 
 import os, requests, sys, time, webbrowser
 ANIME_PATH = "D:\\"
 skip = 7
