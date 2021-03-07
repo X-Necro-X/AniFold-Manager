@@ -3,9 +3,10 @@
  
 import os, requests, sys, time, webbrowser
 ANIME_PATH = "D:\\"
-skip = 7
+skip = 0
 def setIcon(ANIME_PATH, skip):
     cnt = 1
+    tadd = []
     for anime in os.listdir(ANIME_PATH):
         if anime[0]=='!' or anime=='$RECYCLE.BIN':
             continue
@@ -18,6 +19,7 @@ def setIcon(ANIME_PATH, skip):
             data = index.read()
             matched = []
             pres = []
+            counter = 0
             add, subtract = [], []
             res = open(ANIME_PATH + anime + '/!restrict.txt', 'a+')
             res.close()
@@ -52,6 +54,8 @@ def setIcon(ANIME_PATH, skip):
                 }
                 '''
                 matched = [int(data)]
+                print(end='.')
+                counter += 1
                 for current in matched:
                     variables = {
                         'id': current
@@ -59,20 +63,25 @@ def setIcon(ANIME_PATH, skip):
                     response = requests.post('https://graphql.anilist.co', json={'query': query, 'variables': variables}).json()['data']['Media']['relations']['edges']
                     rln = map(lambda x: x['node']['id'], filter(lambda x: x['node']['type']!='MANGA', response))
                     for node in rln:
-                        if node in pres:
-                            matched.append(node)
-                            continue
                         if node not in matched and node not in restrictions:
+                            if node in pres:
+                                print(end='.')
+                                counter += 1
+                                matched.append(node)
+                                continue
                             webbrowser.open('https://anilist.co/anime/'+str(node), new=2)
                             choice = input('Add '+str(node)+'? [Yes(y)/No(n)]')
                             if choice == 'y':
                                 add.append(node)
+                                print(end='.')
+                                counter += 1
                                 matched.append(node)
                             else:
                                 subtract.append(str(node))
                     time.sleep(1)
+            print(' (',counter,')')
             if add:
-                print('   -Anime to be added:', add)
+                tadd.extend(add)
             if subtract:
                 os.system(ANIME_PATH[0] + ': & cd ' + ANIME_PATH + anime + ' & attrib -h !restrict.txt')
                 index = open(ANIME_PATH + anime + '/' + '!restrict.txt', 'a+')
@@ -83,4 +92,5 @@ def setIcon(ANIME_PATH, skip):
         except Exception as e:
             print(e)
             continue
+    print('Anime to be added: ',tadd)
 setIcon(ANIME_PATH, skip)
