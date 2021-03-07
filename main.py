@@ -92,7 +92,7 @@ def generate(ANIME_PATH):
                 index.write(log.get('1.0',END).split(':')[-1].strip())
                 index.close()
             for part in os.listdir(ANIME_PATH + anime):
-                if part == '!ndex.txt' or part == 'desktop.ini' or part == '!con.ico':
+                if part == '!ndex.txt' or part == '!restrict.txt' or part == 'desktop.ini' or part == '!con.ico':
                     continue
                 log.insert(END, ' >Scanning sub-folder ' + part + '...\n')
                 log.see(END)
@@ -189,7 +189,7 @@ def setIcon(ANIME_PATH):
                 root.update()
                 time.sleep(1)
             for part in os.listdir(ANIME_PATH + anime):
-                if part == '!ndex.txt' or part == 'desktop.ini' or part == '!con.ico':
+                if part == '!ndex.txt' or part == '!restrict.txt' or part == 'desktop.ini' or part == '!con.ico':
                     continue
                 log.insert(END, ' >Scanning sub-folder ' + part + '...\n')
                 log.see(END)
@@ -277,7 +277,7 @@ def missing(ANIME_PATH):
             continue
         try:
             for part in os.listdir(ANIME_PATH + anime):
-                if part == '!ndex.txt' or part == 'desktop.ini' or part == '!con.ico':
+                if part == '!ndex.txt' or part == '!restrict.txt' or part == 'desktop.ini' or part == '!con.ico':
                     continue
                 log.insert(END, '  >Scanning: ' + part + '\n')
                 log.see(END)
