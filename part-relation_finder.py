@@ -2,9 +2,12 @@
 # sidmishra94540@gmail.com
  
 import os, requests, sys, time, webbrowser
-ANIME_PATH = "D:\\"
+ANIME_PATH = "E:\Anime\\"
 skip = 0
-def setIcon(ANIME_PATH, skip):
+def createPart(parts, path):
+    for part in parts:
+        os.mkdir(path+'/'+str(part))
+def check(ANIME_PATH, skip):
     cnt = 1
     tadd = []
     for anime in os.listdir(ANIME_PATH):
@@ -16,7 +19,7 @@ def setIcon(ANIME_PATH, skip):
                 continue
             flag = 1
             index = open(ANIME_PATH + anime + '/!ndex.txt', 'r')
-            data = index.read()
+            data = index.read().strip()
             matched = []
             pres = []
             counter = 0
@@ -24,14 +27,14 @@ def setIcon(ANIME_PATH, skip):
             res = open(ANIME_PATH + anime + '/!restrict.txt', 'a+')
             res.close()
             restrict = open(ANIME_PATH + anime + '/!restrict.txt', 'r')
-            restrictions = list(map(int, restrict.read().split(',')[:-1]))
+            restrictions = list(map(int, restrict.read().strip().split(',')[:-1]))
             os.system(ANIME_PATH[0] + ': & cd ' + ANIME_PATH + anime + ' & attrib +h !restrict.txt')
             restrict.close()
             for part in os.listdir(ANIME_PATH + anime):
                 if part == '!ndex.txt' or part == '!restrict.txt' or part == 'desktop.ini' or part == '!con.ico':
                     continue
                 index = open(ANIME_PATH + anime + '/' + part + '/!ndex.txt', 'r')
-                data = int(index.read())
+                data = int(index.read().strip())
                 index.close()
                 pres.append(data)
             if flag:
@@ -81,6 +84,7 @@ def setIcon(ANIME_PATH, skip):
                     time.sleep(1)
             print(' (',counter,')')
             if add:
+                createPart(add, ANIME_PATH+anime)
                 tadd.extend(add)
             if subtract:
                 os.system(ANIME_PATH[0] + ': & cd ' + ANIME_PATH + anime + ' & attrib -h !restrict.txt')
@@ -93,4 +97,4 @@ def setIcon(ANIME_PATH, skip):
             print(e)
             continue
     print('Anime to be added: ',tadd)
-setIcon(ANIME_PATH, skip)
+check(ANIME_PATH, skip)
