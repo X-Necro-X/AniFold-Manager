@@ -2,7 +2,7 @@
 # sidmishra94540@gmail.com
  
 import os, requests, sys, time, webbrowser
-ANIME_PATH = "E:\Anime\\"
+ANIME_PATH = "E:\Important\Projects\Anifold Samurai\Test\\"
 skip = 0
 def createPart(parts, path):
     for part in parts:
@@ -11,8 +11,6 @@ def check(ANIME_PATH, skip):
     cnt = 1
     tadd = []
     for anime in os.listdir(ANIME_PATH):
-        if anime[0]=='!' or anime=='$RECYCLE.BIN':
-            continue
         try:
             if cnt <= skip:
                 cnt += 1
@@ -94,7 +92,7 @@ def check(ANIME_PATH, skip):
                 index.close()
                 os.system(ANIME_PATH[0] + ': & cd ' + ANIME_PATH + anime + ' & attrib +h !restrict.txt')
         except Exception as e:
-            print(e)
+            print('Error:', e)
             continue
     print('Anime to be added: ',tadd)
 check(ANIME_PATH, skip)
