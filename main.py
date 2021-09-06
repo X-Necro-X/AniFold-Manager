@@ -124,9 +124,6 @@ def add(path):
         os.system(path[0] + ': & cd ' + path + ' & attrib +h !restrict.txt')
     print(len(add), '- new anime added!')
 
-
-
-
 def new(path):
     link = input('Enter link of the anime page (anilist.co): ')
     anime_id = link.split('/')[4]
@@ -141,14 +138,63 @@ def update(path):
         cnt += 1
 
 def sync(path):
-    pass
+    variables = {
+        'userId': 599228,
+        'type': 'ANIME'
+    }
+    query = '''
+    query ($userId: Int, $type: MediaType){
+        MediaListCollection (userId: $userId, type: $type){
+            lists{
+                name
+                status
+                entries{
+                    mediaId
+                }
+            }
+        }
+    }
+    '''
+    response = requests.post('https://graphql.anilist.co', json={'query': query, 'variables': variables}).json()['data']['MediaListCollection']['lists']
+    completed = set()
+    for list in response:
+        if list.get('status') in ['COMPLETED', 'PLANNING']:
+            for entry in list.get('entries'):
+                completed.add(entry.get('mediaId'))
+    unformatted = 0
+    present = set()
+    for anime in os.listdir(path):
+        try:
+            for part in os.listdir(path+'/'+anime):
+                if part in ['!ndex.txt', '!restrict.txt', 'desktop.ini', '!con.ico']:
+                    continue
+                try:
+                    index = open(path+'/'+anime+'/'+part+'/!ndex.txt', 'r')
+                    data = index.read().strip()
+                    present.add(int(data))
+                    index.close()
+                except:
+                    unformatted += 1
+        except:
+            continue
+    print(present, completed)
+    comp_not, pres_not = 0, 0
+    for comp in completed:
+        if comp not in present:
+            comp_not += 1
+    for pres in present:
+        if pres not in completed:
+            pres_not += 1
+    print('Anime in anilist but not in folder:', comp_not)
+    print('Anime in folder but not in anilist:', pres_not)
+    print('Unformatted folders:', unformatted)
 
 if __name__ == '__main__':
     print('----------------------------------------------------------------------------------------------------')
     print('------------------------------------------ANIFOLD  SAMURAI------------------------------------------')
     print('----------------------------------------------------------------------------------------------------')
-    # ANIME_PATH = input('Enter Anime Path: ').strip('\\').strip('/')
-    ANIME_PATH = 'E:\Important\Projects\Anifold Samurai\Test'.strip('\\').strip('/')
+    ANIME_PATH = input('Enter Anime Path: ').strip('\\').strip('/')
+    # ANIME_PATH = 'E:\Important\Projects\Anifold Samurai\Test'.strip('\\').strip('/')
     while True:
         print('1. New')
         print('2. Update')
