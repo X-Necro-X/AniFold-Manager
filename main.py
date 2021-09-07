@@ -2,7 +2,6 @@
 # sidmishra94540@gmail.com
  
 # icon, name update
-# https://anilist.co/anime/101280/That-Time-I-Got-Reincarnated-as-a-Slime/
 
 import os, requests, time, webbrowser, PIL.Image
 
@@ -158,12 +157,16 @@ def sync(path):
     response = requests.post('https://graphql.anilist.co', json={'query': query, 'variables': variables}).json()['data']['MediaListCollection']['lists']
     completed = set()
     for list in response:
-        if list.get('status') in ['COMPLETED', 'PLANNING']:
+        if list.get('status') in ['COMPLETED', 'WATCHING']:
             for entry in list.get('entries'):
                 completed.add(entry.get('mediaId'))
-    unformatted = 0
+    unformatted = []
     present = set()
     for anime in os.listdir(path):
+        if anime in ['$RECYCLE.BIN', 'Config.Msi', 'desktop.ini', 'msdownld.tmp', 'System Volume Information']:
+            continue
+        if not os.path.isfile(path+'/'+anime+'/!ndex.txt'):
+            unformatted.append(anime)
         try:
             for part in os.listdir(path+'/'+anime):
                 if part in ['!ndex.txt', '!restrict.txt', 'desktop.ini', '!con.ico']:
@@ -174,25 +177,49 @@ def sync(path):
                     present.add(int(data))
                     index.close()
                 except:
-                    unformatted += 1
+                    unformatted.append(anime+'/'+part)
         except:
             continue
-    print(present, completed)
-    comp_not, pres_not = 0, 0
+    comp_not, pres_not = [], []
     for comp in completed:
         if comp not in present:
-            comp_not += 1
+            comp_not.append(comp)
     for pres in present:
         if pres not in completed:
-            pres_not += 1
-    print('Anime in anilist but not in folder:', comp_not)
-    print('Anime in folder but not in anilist:', pres_not)
-    print('Unformatted folders:', unformatted)
+            pres_not.append(pres)
+    while True:
+        print('1. Anime in anilist but not in folder:', len(comp_not))
+        print('2. Anime in folder but not in anilist:', len(pres_not))
+        print('3. Unformatted folders:', len(unformatted))
+        print('4. Exit to Main Menu')
+        choice = input('Enter the respective number to view full list: ')
+        if choice in ['1', '2']:
+            to_be_printed = comp_not if choice=='1' else pres_not
+            for part in to_be_printed:
+                variables = {
+                'id': part
+                }
+                query = '''
+                query ($id: Int) {
+                    Media (id: $id, type: ANIME) {
+                        title {
+                            english
+                            romaji
+                        }
+                    }
+                }
+                '''
+                response = requests.post('https://graphql.anilist.co', json={'query': query, 'variables': variables}).json()['data']['Media']
+                title = response['title']['english'] if response['title']['english'] else response['title']['romaji']
+                print(title)
+                time.sleep(1)
+        elif choice == '3':
+            for part in unformatted:
+                print(part)
+        else:
+            return
 
 if __name__ == '__main__':
-    print('----------------------------------------------------------------------------------------------------')
-    print('------------------------------------------ANIFOLD  SAMURAI------------------------------------------')
-    print('----------------------------------------------------------------------------------------------------')
     ANIME_PATH = input('Enter Anime Path: ').strip('\\').strip('/')
     # ANIME_PATH = 'E:\Important\Projects\Anifold Samurai\Test'.strip('\\').strip('/')
     while True:
@@ -209,6 +236,3 @@ if __name__ == '__main__':
             sync(ANIME_PATH)
         else:
             break
-    print('----------------------------------------------------------------------------------------------------')
-    print('---------------------------------------------THANK  YOU---------------------------------------------')
-    print('----------------------------------------------------------------------------------------------------')
