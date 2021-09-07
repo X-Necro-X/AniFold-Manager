@@ -1,30 +1,79 @@
 # Necro(ネクロ)
 # sidmishra94540@gmail.com
- 
-# icon, name update
 
-import os, requests, time, webbrowser, PIL.Image
+import os, requests, time, webbrowser, PIL.Image, PIL.ImageChops
+
+def anilist(type, data):
+    if type == 'DETAILS':
+        variables = {
+            'id': data.part
+        }
+        query = '''
+            query ($id: Int) {
+                Media (id: $id, type: ANIME) {
+                    id
+                    title {
+                        english
+                        romaji
+                    }
+                    coverImage{
+                        extraLarge
+                    }
+                }
+            }
+        '''
+        response = requests.post('https://graphql.anilist.co', json={'query': query, 'variables': variables}).json()['data']['Media']
+        return response
+    if type == 'RELATIONS':
+        variables = {
+            'id': data.current
+        }
+        query = '''
+            query ($id: Int) {
+                Media (id: $id, type: ANIME) {
+                    relations{
+                        edges{
+                            node{
+                                id
+                                type
+                            }
+                            relationType
+                        }
+                    }
+                }
+            }
+        '''
+        response = requests.post('https://graphql.anilist.co', json={'query': query, 'variables': variables}).json()['data']['Media']['relations']['edges']
+        return response
+    if type == 'LISTS':
+        variables = {
+                'userId': data.uid,
+                'type': data.type
+            }
+        query = '''
+            query ($userId: Int, $type: MediaType){
+                MediaListCollection (userId: $userId, type: $type){
+                    lists{
+                        name
+                        status
+                        entries{
+                            mediaId
+                        }
+                    }
+                }
+            }
+        '''
+        response = requests.post('https://graphql.anilist.co', json={'query': query, 'variables': variables}).json()['data']['MediaListCollection']['lists']
+        return response
+
+def isValid(name):
+    if name in ['!ndex.txt', '!restrict.txt', 'desktop.ini', '!con.ico', '$RECYCLE.BIN', 'Config.Msi', 'desktop.ini', 'msdownld.tmp', 'System Volume Information']:
+        return False
+    return True
 
 def create(part, path):
     os.mkdir(path+'/'+part)
-    variables = {
-    'id': part
-    }
-    query = '''
-    query ($id: Int) {
-        Media (id: $id, type: ANIME) {
-            id
-            title {
-                english
-                romaji
-            }
-            coverImage{
-                extraLarge
-            }
-        }
-    }
-    '''
-    response = requests.post('https://graphql.anilist.co', json={'query': query, 'variables': variables}).json()['data']['Media']
+    response = anilist('DETAILS', {part: part})
     title = response['title']['english'] if response['title']['english'] else response['title']['romaji']
     title = title.replace('&', 'and').replace('/', '~').replace(':', '~').replace('*', '~').replace('?', '~').replace('"', '~').replace('<', '~').replace('>', '~').replace('|', '~')
     cover = response['coverImage']['extraLarge']
@@ -59,7 +108,7 @@ def add(path):
     os.system(path[0] + ': & cd ' + path + ' & attrib +h !restrict.txt')
     restrict.close()
     for part in os.listdir(path):
-        if part in ['!ndex.txt', '!restrict.txt', 'desktop.ini', '!con.ico']:
+        if not isValid(part):
             continue
         index = open(path + '/' + part + '/!ndex.txt', 'r')
         newdata = int(index.read().strip())
@@ -67,21 +116,6 @@ def add(path):
         pres.append(newdata)
     print('--------------------------------------------------')
     index.close()
-    query = '''
-    query ($id: Int) {
-        Media (id: $id, type: ANIME) {
-            relations{
-                edges{
-                    node{
-                        id
-                        type
-                    }
-                    relationType
-                }
-            }
-        }
-    }
-    '''
     if int(data) not in pres:
         pres.append(int(data))
         add.append(int(data))
@@ -89,10 +123,7 @@ def add(path):
         counter += 1
     matched = [int(data)]
     for current in matched:
-        variables = {
-            'id': current
-        }
-        response = requests.post('https://graphql.anilist.co', json={'query': query, 'variables': variables}).json()['data']['Media']['relations']['edges']
+        response = anilist('RELATIONS', {current: current})
         rln = map(lambda x: x['node']['id'], filter(lambda x: x['node']['type']!='MANGA', response))
         for node in rln:
             if node not in matched and node not in restrictions:
@@ -135,26 +166,14 @@ def update(path):
         print(str(cnt)+'.', part)
         add(path+'/'+part)
         cnt += 1
+    for anime in os.listdir(path):
+        if not isValid(anime):
+            continue
+        
 
 def sync(path):
-    variables = {
-        'userId': 599228,
-        'type': 'ANIME'
-    }
-    query = '''
-    query ($userId: Int, $type: MediaType){
-        MediaListCollection (userId: $userId, type: $type){
-            lists{
-                name
-                status
-                entries{
-                    mediaId
-                }
-            }
-        }
-    }
-    '''
-    response = requests.post('https://graphql.anilist.co', json={'query': query, 'variables': variables}).json()['data']['MediaListCollection']['lists']
+    uid = 599228
+    response = anilist('LISTS', {uid: uid, type: 'ANIME'})
     completed = set()
     for list in response:
         if list.get('status') in ['COMPLETED', 'WATCHING']:
@@ -163,7 +182,7 @@ def sync(path):
     unformatted = []
     present = set()
     for anime in os.listdir(path):
-        if anime in ['$RECYCLE.BIN', 'Config.Msi', 'desktop.ini', 'msdownld.tmp', 'System Volume Information']:
+        if not isValid(anime):
             continue
         if not os.path.isfile(path+'/'+anime+'/!ndex.txt'):
             unformatted.append(anime)
@@ -196,20 +215,7 @@ def sync(path):
         if choice in ['1', '2']:
             to_be_printed = comp_not if choice=='1' else pres_not
             for part in to_be_printed:
-                variables = {
-                'id': part
-                }
-                query = '''
-                query ($id: Int) {
-                    Media (id: $id, type: ANIME) {
-                        title {
-                            english
-                            romaji
-                        }
-                    }
-                }
-                '''
-                response = requests.post('https://graphql.anilist.co', json={'query': query, 'variables': variables}).json()['data']['Media']
+                response = anilist('DETAILS', {part: part})
                 title = response['title']['english'] if response['title']['english'] else response['title']['romaji']
                 print(title)
                 time.sleep(1)
