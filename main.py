@@ -1,7 +1,7 @@
 # Necro(ネクロ)
 # sidmishra94540@gmail.com
 
-import os, requests, time, webbrowser, PIL.Image, PIL.ImageChops
+import os, requests, time, webbrowser, PIL.Image
 
 def anilist(type, data):
     try:
