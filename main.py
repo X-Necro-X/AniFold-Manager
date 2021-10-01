@@ -209,7 +209,7 @@ def update(path):
     print('If the changes to folder icons are not visible, restart the system.')
 
 def sync(path):
-    uid = 599228
+    uid = int(input('Enter user-id: '))
     response = anilist('LISTS', {'uid': uid, 'type': 'ANIME'})
     if not response:
         print('User not found!')
