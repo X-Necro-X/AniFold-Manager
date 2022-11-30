@@ -1,0 +1,62 @@
+{
+  "name": "anifold-manager",
+  "version": "1.0.0",
+  "description": "Easily set Anime folder icons on Windows.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/X-Necro-X/AniFold-Manager.git"
+  },
+  "author": "Necro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/X-Necro-X/AniFold-Manager/issues"
+  },
+  "homepage": "https://github.com/X-Necro-X/AniFold-Manager#readme",
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.63",
+    "@electron-forge/maker-deb": "^6.0.0-beta.63",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.63",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.63",
+    "@electron-forge/maker-zip": "^6.0.0-beta.63",
+    "electron": "^18.1.0",
+    "electron-packager": "^15.5.1"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.0",
+    "python-shell": "^3.0.1"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "anifold_manager"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
+  }
+}
